@@ -1,8 +1,7 @@
 from django import forms
 from django.core.validators import MinValueValidator
-class new_listing_form(forms.Form): # try usin the initial function to add some value to this form I hope it works
-    user = forms.CharField(max_length=150, widget=forms.HiddenInput())
-    title = forms.CharField(max_length=80)
-    discription = forms.Textarea(max_length = 10000)
-    image_url = forms.URLField()
-    initial_bid = forms.FloatField(validators = [MinValueValidator(0)])
+class new_listing_form(forms.Form): # this is a form that is created by django for data about a new listing on the commerce website
+    title = forms.CharField(label="Title for the listing",max_length=80, required= True)
+    description = forms.CharField(label="description", widget=forms.Textarea(attrs={'class':"description"}), required=True, max_length= 10000)
+    image_url = forms.URLField(label="product image url (optional)", required=False)
+    initial_bid = forms.FloatField(validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))

@@ -10,10 +10,10 @@ class User(AbstractUser): #user table
 class listing(models.Model):  # a table for listing
     user = models.ForeignKey("User", on_delete = models.PROTECT)
     title = models.CharField(max_length = 80)
-    discription = models.TextField(max_length= 10000, blank = True)
+    description = models.TextField(max_length= 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     image_url = models.URLField()
-    intial_bid = models.FloatField(validators = [MinValueValidator(0)], null = True)
+    initial_bid = models.FloatField(validators = [MinValueValidator(0)], null = True)
 
 class all_bids(models.Model): # a table to store bids
     user = models.ForeignKey("User", on_delete = models.PROTECT, null = True)

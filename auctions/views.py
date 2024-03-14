@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, listing
-
+from .forms import new_listing_form
 
 def index(request):
     return render(request, "auctions/index.html")
@@ -62,6 +62,15 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def create_listing(request):
-    pass
+    if request.method =="POST":
+        user_name = request.user.username
+        user_instance = User.objects.get(username=user_name)
+        new_listing = listing(user = user_instance,title = request.POST["title"], description = request.POST["description"], image_url = request.POST["image_url"], initial_bid = request.POST["initial_bid"])
+        new_listing.save() # add a way to send a message that a new listing is seccsufly been created
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
+        
+    
     
 
