@@ -4,4 +4,4 @@ class new_listing_form(forms.Form): # this is a form that is created by django f
     title = forms.CharField(label="Title for the listing",max_length=80, required= True)
     description = forms.CharField(label="description", widget=forms.Textarea(attrs={'class':"description"}), required=True, max_length= 10000)
     image_url = forms.URLField(label="product image url (optional)", required=False)
-    initial_bid = forms.FloatField(validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
+    initial_bid = forms.FloatField(label="initial bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))

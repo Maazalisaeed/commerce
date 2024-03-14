@@ -7,7 +7,7 @@ from .models import User, listing
 from .forms import new_listing_form
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html",{"listings":listing.objects.all()})
 
 
 def login_view(request):
@@ -64,7 +64,7 @@ def register(request):
 def create_listing(request):
     if request.method =="POST":
         user_name = request.user.username
-        user_instance = User.objects.get(username=user_name)
+        user_instance = User.objects.get(username=user_name) # plus I also wish to add user to sumbit there own images to me url way is clunky
         new_listing = listing(user = user_instance,title = request.POST["title"], description = request.POST["description"], image_url = request.POST["image_url"], initial_bid = request.POST["initial_bid"])
         new_listing.save() # add a way to send a message that a new listing is seccsufly been created
         return HttpResponseRedirect(reverse("index"))
