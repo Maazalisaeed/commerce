@@ -1,5 +1,17 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    todo
+    <h2>Active Listings</h2>
+    {%for each_listing in listings %}
+    <div>
+        <ul>
+            <h4>{{each_listing.user}}</h4>
+            {{each_listing.timestamp}}
+            <h3> {{each_listing.title}}</h3>
+            <img src="{{each_listing.image_url}}" alt="image of {{each_listing.title}}">
+            <h3>Currnt bid: ${{each_listing.initial_bid}}</h3>
+
+        </ul>
+    </div>
+    {%endfor%}
 {% endblock %}
