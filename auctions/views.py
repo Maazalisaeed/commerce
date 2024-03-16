@@ -7,9 +7,9 @@ from .models import User, listing
 from .forms import new_listing_form
 
 def index(request):
-    l=listing.objects.all().order_by('-timestamp').values() # all this arg all requesting for the discription of the product which is not being user her but will in the listing page idiviudal
-    print(l) # user name is not showing up in the main manu fix that
-    return render(request, "auctions/index.html",{"listings":listing.objects.all().order_by('-timestamp').values()})
+     # all this arg all requesting for the discription of the product which is not being user her but will in the listing page idiviudal
+    # user name is not showing up in the main manu fix that
+    return render(request, "auctions/index.html")
     # lastly I need to fix the inital bid funtion it will not work for updating the price there need to some logic for that as well 
 
 def login_view(request):
