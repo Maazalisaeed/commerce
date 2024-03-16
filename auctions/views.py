@@ -8,8 +8,9 @@ from .forms import new_listing_form
 
 def index(request):
      # all this arg all requesting for the discription of the product which is not being user her but will in the listing page idiviudal
-    all_the_bids = all_bids.objects.all()
-    return render(request, "auctions/index.html",{"all_the_listings": listing.objects.all()})
+    all_the_listings = listing.objects.all()
+    all_the_bids = all_the_listings.bid.all()
+    return render(request, "auctions/index.html",{"all_the_listings": })
     # lastly I need to fix the inital bid funtion it will not work for updating the price there need to some logic for that as well 
 
 def login_view(request):
