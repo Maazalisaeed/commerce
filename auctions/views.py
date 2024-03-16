@@ -8,8 +8,8 @@ from .forms import new_listing_form
 
 def index(request):
      # all this arg all requesting for the discription of the product which is not being user her but will in the listing page idiviudal
-    # user name is not showing up in the main manu fix that
-    return render(request, "auctions/index.html")
+    all_the_bids = all_bids.objects.all()
+    return render(request, "auctions/index.html",{"all_the_listings": listing.objects.all()})
     # lastly I need to fix the inital bid funtion it will not work for updating the price there need to some logic for that as well 
 
 def login_view(request):
@@ -65,8 +65,7 @@ def register(request):
 
 def create_listing(request):
     if request.method =="POST":
-        user_name = request.user.username
-        user_instance = User.objects.get(username=user_name) # plus I also wish to add user to sumbit there own images to me url way is clunky
+        user_instance = User.objects.get(username= request.user.username) # plus I also wish to add user to sumbit there own images to me url way is clunky
         new_listing = listing(user = user_instance,title = request.POST["title"], description = request.POST["description"], image_url = request.POST["image_url"])
         new_listing.save()
         initial_bid = all_bids(user = user_instance , bid = request.POST["initial_bid"], for_which_listing = new_listing )
