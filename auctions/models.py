@@ -13,13 +13,13 @@ class listing(models.Model):  # a table for listing
     description = models.TextField(max_length= 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     image_url = models.URLField()
-    initial_bid = models.FloatField(validators = [MinValueValidator(0)], null = True)
+    
 
 class all_bids(models.Model): # a table to store bids
     user = models.ForeignKey("User", on_delete = models.PROTECT, null = True)
     bid = models.FloatField(MinValueValidator(0))
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
-    listing = models.ForeignKey("listing",on_delete = models.CASCADE, null = True)    
+    for_which_listing = models.ForeignKey("listing",on_delete = models.CASCADE, null = True)    
 
 class comments(models.Model): # a table for comments
     user = models.ForeignKey("User", on_delete = models.PROTECT, null = True)
