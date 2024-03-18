@@ -1,5 +1,7 @@
 {% extends "auctions/layout.html" %}
+{% block title %}Create a new listing{% endblock %}
 {% block body %}
+<div class="hide_active">{% block active2 %}active{% endblock %}</div>
 <form action="{% url 'create_listing' %}" method="post">
 {% csrf_token %}
 {{ form.as_p }}

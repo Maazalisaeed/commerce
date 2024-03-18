@@ -1,6 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+<div class="hide_active">{% block active %}active{% endblock %}</div>
     <h2>Active Listings</h2>
     
    {%for each_listing in listings_with_bids%}
