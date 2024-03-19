@@ -2,26 +2,37 @@
 
 {% block body %}
 <div class="hide_active">{% block active %}active{% endblock %}</div>
-    <h2>Active Listings</h2>
-    
-   {%for each_listing in listings_with_bids%}
-   <button type="submit" formaction= www.google.com>
-        <div class="card mb-3" style="max-width: 540px;">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    <img src="{{each_listing.image_url}}" class="img-fluid rounded-start" alt="This is an image of {{each_listing.title}}">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">{{each_listing.title}}</h5>
-                        <p class="card-text">{{each_listing.description}}</p>
-                        <h5 class="card-title">Current bid: ${{each_listing.bid}}</h5>
-                        <p class="card-text"><small class="text-body-secondary">added {{each_listing.timestamp}}</small></p>
+<h2>Active Listings</h2>
+<div class="container">
+    <div class="row">
+        {%for each_listing in listings_with_bids%}
+
+        <form method="post" action="{% url 'listing_page'%}">
+            {% csrf_token %}
+            <div class="col">
+                <button type="submit">
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="{{each_listing.image_url}}" class="img-fluid rounded-start"
+                                    alt="This is an image of {{each_listing.title}}">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{each_listing.title}}</h5>
+                                    <p class="card-text">{{each_listing.description}}</p>
+                                    <h5 class="card-title">Current bid: ${{each_listing.bid}}</h5>
+                                    <p class="card-text"><small class="text-body-secondary">added
+                                            {{each_listing.timestamp}}</small></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </button>
             </div>
-        </div> 
-   </button>    
-   {%endfor%}
-    
+        </form>
+    </div>
+</div>
+{%endfor%}
+
 {% endblock %}

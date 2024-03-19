@@ -16,7 +16,7 @@ def index(request):
         'description': each_listing.description,
         'timestamp': each_listing.timestamp,
         'bid': each_listing.bid.filter(for_which_listing = each_listing.id).order_by('-bid').first()}
-        listing_data_with_bids.append(data_of_each_listing)
+        listing_data_with_bids.append(data_of_each_listing)   
     return render(request, "auctions/index.html",{"listings_with_bids":listing_data_with_bids})
      
 
@@ -81,6 +81,10 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
+def listing_page(request):
+    if request.method =="POST":
+        print("something")
+        return(HttpResponse("underconstruction"))
         
     
     
