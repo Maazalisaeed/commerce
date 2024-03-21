@@ -12,6 +12,7 @@ def index(request):
     for each_listing in all_the_listings:
         data_of_each_listing = {
         'title': each_listing.title,
+        'listing_id': each_listing.pk,
         'image_url': each_listing.image_url,
         'description': each_listing.description,
         'timestamp': each_listing.timestamp,
@@ -81,7 +82,7 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
-def listing_page(request):
+def listing_page(request, listing_id): #add error handling if there is no listing of that id
     if request.method =="POST":
         print("something")
         return(HttpResponse("underconstruction"))
