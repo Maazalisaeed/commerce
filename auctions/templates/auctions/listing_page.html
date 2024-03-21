@@ -1,4 +1,43 @@
 {% extends "auctions/layout.html" %}
+{% block title %}{{listing.title}}{% endblock %}
 {% block body %}
-
+<ul>
+    <li>
+        {{listing.title}}
+    </li>
+    <li>
+        {{listing.description}}
+    </li>
+    <li>
+        {{bid}}
+    </li>
+</ul>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    biding history
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">All the previous bids</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container-fluid">
+                {% for each_bid in bid_histroy %}
+                <div class="row">
+                    <div class="col-md-12">@{{each_bid.user}}: ${{each_bid.bid}} at {{each_bid.timestamp}} </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

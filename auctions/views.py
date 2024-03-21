@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -83,9 +84,14 @@ def create_listing(request):
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
 def listing_page(request, listing_id): #add error handling if there is no listing of that id
-    if request.method =="POST":
-        print("something")
-        return(HttpResponse("underconstruction"))
+    try:
+        which_listing = listing.objects.get(pk = listing_id)
+        and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
+        all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
+        return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids})
+    
+    except ObjectDoesNotExist:
+        return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
         
     
     
