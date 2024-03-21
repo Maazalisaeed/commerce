@@ -83,7 +83,7 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
-def listing_page(request, listing_id): #add error handling if there is no listing of that id
+def listing_page(request, listing_id): #add comment section for this page 
     try:
         which_listing = listing.objects.get(pk = listing_id)
         and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
