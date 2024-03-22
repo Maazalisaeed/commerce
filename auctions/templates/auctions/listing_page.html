@@ -9,9 +9,13 @@
         {{listing.description}}
     </li>
     <li>
-        {{bid}}
+        $: {{bid}}
     </li>
 </ul>
+<form>
+  {% csrf_token %}
+  {{form.initial_bid}}
+</form>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
     biding history

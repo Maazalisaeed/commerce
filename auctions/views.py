@@ -75,23 +75,31 @@ def register(request):
 
 def create_listing(request):
     if request.method =="POST":
-        user_instance = User.objects.get(username= request.user.username) # plus I also wish to add user to sumbit there own images to me url way is clunky
-        new_listing = listing(user = user_instance,title = request.POST["title"], description = request.POST["description"], image_url = request.POST["image_url"])
-        new_listing.save()
-        initial_bid = all_bids(user = user_instance , bid = request.POST["initial_bid"], for_which_listing = new_listing )
-        initial_bid.save() # add a way to send a message that a new listing is seccsufly been created
-        return HttpResponseRedirect(reverse("index"))
+        form = new_listing_form(request.POST)
+        if form.is_valid():
+            user_instance = User.objects.get(username= request.user.username) # plus I also wish to add user to sumbit there own images to me url way is clunky
+            new_listing = listing(user = user_instance,title = form.cleaned_data["title"], description = form.cleaned_data["description"], image_url = form.cleaned_data["image_url"])
+            new_listing.save()
+            initial_bid = all_bids(user = user_instance , bid = form.cleaned_data["initial_bid"], for_which_listing = new_listing )
+            initial_bid.save() # add a way to send a message that a new listing is seccsufly been created
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
 def listing_page(request, listing_id): #add comment section for this page 
-    try:
-        which_listing = listing.objects.get(pk = listing_id)
-        and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
-        all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
-        return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids})
+    if request.method =="POST":
+        pass
+    else:
+        
+        try:
+            which_listing = listing.objects.get(pk = listing_id)
+            and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
+            all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":new_listing_form})
     
-    except ObjectDoesNotExist:
-        return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
+        except ObjectDoesNotExist:
+            return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
         
     
     
