@@ -6,4 +6,5 @@ class new_listing_form(forms.Form): # this is a form that is created by django f
     image_url = forms.URLField(label="product image url (optional)", required=False)
     initial_bid = forms.FloatField(label="initial bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
 class biding_form(forms.Form):
-    current_bid = forms.FloatField(label="current bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
+    current_bid = forms.FloatField(label="Your bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
+    # write coustom validators for this function today and also find  a way to add that vaildator to the html side aswell

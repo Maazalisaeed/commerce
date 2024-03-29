@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, listing, all_bids , comments
-from .forms import new_listing_form
+from .forms import new_listing_form , biding_form
 
 def index(request):
     all_the_listings = listing.objects.all().order_by('-timestamp').prefetch_related('bid')
@@ -87,20 +87,31 @@ def create_listing(request):
             return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
-def listing_page(request, listing_id): #add comment section for this page 
+def listing_page(request, listing_id):
     if request.method =="POST":
-        pass
+        form = biding_form(request.POST)
+        if form.is_valid():
+           user_instance = User.objects.get(username= request.user.username)
+           this_listing = listing.objects.get(pk = listing_id)
+           current_bid = all_bids(user = user_instance, bid = form.cleaned_data["current_bid"], for_which_listing = this_listing)
+           current_bid.save() # find a way to prevent the owner of the bid to place a bid insted show them the option to end auction
+                              # may be a different function for whishlist and catagories
+           return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
+        else:
+            return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) # find a way to tell user the bid was invaild message
     else:
+
         
         try:
             which_listing = listing.objects.get(pk = listing_id)
             and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":new_listing_form})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":biding_form})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
         
-    
+def comment(request):
+    pass # add a comment section to my website
     
 

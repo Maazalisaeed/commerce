@@ -11,10 +11,12 @@
     <li>
         $: {{bid}}
     </li>
+    
 </ul>
-<form>
+<form action="{% url 'listing_page' listing.id %} " method="post">
   {% csrf_token %}
-  {{form.initial_bid}}
+  {{form.as_p}}
+  <input type="submit" value="submit">
 </form>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
