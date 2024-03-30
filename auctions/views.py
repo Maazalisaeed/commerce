@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .models import User, listing, all_bids , comments
 from .forms import new_listing_form , biding_form
+from django.contrib import messages
 
 def index(request):
     all_the_listings = listing.objects.all().order_by('-timestamp').prefetch_related('bid')
@@ -98,6 +99,9 @@ def listing_page(request, listing_id):
                               # may be a different function for whishlist and catagories
            return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
         else:
+            which_listing = listing.objects.get(pk = listing_id)
+            lastbid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
+            messages.error(request, f"There was an error. your bid must be greater then ${lastbid}")
             return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) # find a way to tell user the bid was invaild message
     else:
 
@@ -106,7 +110,8 @@ def listing_page(request, listing_id):
             which_listing = listing.objects.get(pk = listing_id)
             and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":biding_form})
+            form = biding_form(initial ={'listing_id':listing_id})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
