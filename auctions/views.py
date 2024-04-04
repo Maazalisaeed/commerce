@@ -116,7 +116,9 @@ def listing_page(request, listing_id):
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
         
-def comment(request):
+def comment_sections(request,listing_id):
+    user_instance = User.objects.get(username= request.user.username)
+    
     pass # add a comment section to my website
     
 
