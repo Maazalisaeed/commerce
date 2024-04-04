@@ -28,4 +28,5 @@ class comments(models.Model): # a table for comments
     user = models.ForeignKey("User", on_delete = models.PROTECT, null = True)
     comment = models.TextField(max_length = 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
+    for_which_listing = models.ForeignKey("listing",on_delete = models.CASCADE, related_name = 'comment', null = True)
     
