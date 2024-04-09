@@ -17,5 +17,6 @@ class biding_form(forms.Form):
             self._errors["current_bid"] = self.error_class(["Bid must be larger than the last one"])
             del form_data['current_bid']
         return form_data
-class comments(forms.Form):
-    comment = forms.CharField(label="comment", widget=forms.Textarea(attrs={'class':"comment"}), required=True, max_length= 10000)
+class comments_form(forms.Form):
+    comment = forms.CharField(label="comment", widget=forms.Textarea(attrs={'class':"comment"}), required=False, max_length= 10000)
+    listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)

@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, listing, all_bids , comments
-from .forms import new_listing_form , biding_form
+from .forms import new_listing_form , biding_form, comments_form
 from django.contrib import messages
 
 def index(request):
@@ -110,8 +110,14 @@ def listing_page(request, listing_id):
             which_listing = listing.objects.get(pk = listing_id)
             and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
+            comments_for_this_listing = comments.objects.all().filter(for_which_listing = listing_id).order_by('-timestamp')
+            if comments_for_this_listing.exists():
+                all_comments = comments_for_this_listing
+            else:
+                all_comments = "wow such empty"    
             form = biding_form(initial ={'listing_id':listing_id})
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form})
+            commenting_form = comments_form(initial ={'listing_id':listing_id})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form,"comments_form":commenting_form, "comment_section":all_comments})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
