@@ -74,7 +74,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def create_listing(request):
+def create_listing(request): # use the @login fuction provied by cs50 and add a way for user to login/register form the error page
     if request.method =="POST":
         form = new_listing_form(request.POST)
         if form.is_valid():
