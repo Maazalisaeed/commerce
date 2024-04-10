@@ -64,5 +64,15 @@ close auction
   <input type="submit" value="submit">
 
 </form>
+{% if comment_section == "wow such empty" %}
+<div>
+  {{comment_section}}
+</div>
+{% else %}
+ {%for each_comment in comment_section %}
+ <div>{{each_comment.user}}</div>
+ <div>{{each_comment.comment}}</div>
+ {% endfor %}
+{% endif %}
 
 {% endblock %}

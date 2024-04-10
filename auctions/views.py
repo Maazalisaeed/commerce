@@ -90,19 +90,23 @@ def create_listing(request):
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
 def listing_page(request, listing_id):
     if request.method =="POST":
-        form = biding_form(request.POST)
-        if form.is_valid():
-           user_instance = User.objects.get(username= request.user.username)
-           this_listing = listing.objects.get(pk = listing_id)
-           current_bid = all_bids(user = user_instance, bid = form.cleaned_data["current_bid"], for_which_listing = this_listing)
-           current_bid.save() # find a way to prevent the owner of the bid to place a bid insted show them the option to end auction
+        try:
+            form = biding_form(request.POST)
+            if form.is_valid():
+                user_instance = User.objects.get(username= request.user.username)
+                this_listing = listing.objects.get(pk = listing_id)
+                current_bid = all_bids(user = user_instance, bid = form.cleaned_data["current_bid"], for_which_listing = this_listing)
+                current_bid.save() # find a way to prevent the owner of the bid to place a bid insted show them the option to end auction
                               # may be a different function for whishlist and catagories
-           return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
-        else:
-            which_listing = listing.objects.get(pk = listing_id)
-            lastbid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
-            messages.error(request, f"There was an error. your bid must be greater then ${lastbid}")
-            return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) # find a way to tell user the bid was invaild message
+                return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
+        
+            else:
+                which_listing = listing.objects.get(pk = listing_id)
+                lastbid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
+                messages.error(request, f"There was an error. your bid must be greater then ${lastbid}")
+                return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) # find a way to tell user the bid was invaild message
+        except ObjectDoesNotExist:
+            return render(request, "auctions/error_page.html",{"error":"user must be signed in"})            
     else:
 
         
@@ -122,9 +126,15 @@ def listing_page(request, listing_id):
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
         
-def comment_section(request,listing_id):
-    user_instance = User.objects.get(username= request.user.username)
-
-    pass # add a comment section to my website
-    
-
+def comment_section(request):
+    if request.method =="POST":
+        try:
+            form = comments_form(request.POST)
+            if form.is_valid():
+                user_instance = User.objects.get(username= request.user.username)
+                this_listing = listing.objects.get(pk = form.cleaned_data["listing_id"])
+                new_comment = comments(user = user_instance, comment = form.cleaned_data["comment"], for_which_listing = this_listing)
+                new_comment.save()
+                return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+        except ObjectDoesNotExist:
+            return render(request, "auctions/error_page.html",{"error":"user must be signed in"})
