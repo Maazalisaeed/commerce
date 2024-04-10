@@ -29,4 +29,8 @@ class comments(models.Model): # a table for comments
     comment = models.TextField(max_length = 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     for_which_listing = models.ForeignKey("listing",on_delete = models.CASCADE, related_name = 'comment', null = True)
+class wishlist(models.Model): # a table for wishlist of users
+    user =  models.ManyToManyField(User)
+    for_which_lsiting = models.ManyToManyField(listing)
+    timestamp = models.DateTimeField(auto_now_add = True , null = True)
     
