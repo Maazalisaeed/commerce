@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .models import User, listing, all_bids , comments
 from .forms import new_listing_form , biding_form, comments_form
 from django.contrib import messages
@@ -125,16 +126,17 @@ def listing_page(request, listing_id):
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
-        
+@login_required(login_url='/login') # add a way that there is message pop up the user must be login/registered        
 def comment_section(request):
     if request.method =="POST":
-        try:
-            form = comments_form(request.POST)
-            if form.is_valid():
-                user_instance = User.objects.get(username= request.user.username)
-                this_listing = listing.objects.get(pk = form.cleaned_data["listing_id"])
-                new_comment = comments(user = user_instance, comment = form.cleaned_data["comment"], for_which_listing = this_listing)
-                new_comment.save()
-                return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
-        except ObjectDoesNotExist:
-            return render(request, "auctions/error_page.html",{"error":"user must be signed in"})
+        form = comments_form(request.POST)
+        if form.is_valid():
+            user_instance = User.objects.get(username= request.user.username)
+            this_listing = listing.objects.get(pk = form.cleaned_data["listing_id"])
+            new_comment = comments(user = user_instance, comment = form.cleaned_data["comment"], for_which_listing = this_listing)
+            new_comment.save()
+            return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+    else:
+        return HttpResponse("will make this page aswell")
+def wishlist(reqest):
+    pass   

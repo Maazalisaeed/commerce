@@ -9,10 +9,11 @@ class User(AbstractUser): #user table
 
 class listing(models.Model):  # a table for listing
     user = models.ForeignKey("User", on_delete = models.PROTECT)
-    title = models.CharField(max_length = 80)
+    title = models.CharField(max_length = 100)
     description = models.TextField(max_length= 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     image_url = models.URLField()
+    catagorie = models.CharField(max_length=255, blank= False, default='default_value')
     def __str__ (self):
         return(f" {self.title},{self.id}")
 
