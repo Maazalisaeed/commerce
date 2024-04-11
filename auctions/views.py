@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import User, listing, all_bids , comments
+from .models import User, listing, all_bids , comments, wishlist
 from .forms import new_listing_form , biding_form, comments_form
 from django.contrib import messages
 
@@ -138,5 +138,27 @@ def comment_section(request):
             return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
     else:
         return HttpResponse("will make this page aswell")
-def wishlist(reqest):
-    pass   
+@login_required(login_url='/login')
+def wishlistfunction(request):
+    user_instance = User.objects.get(username= request.user.username)
+    if request.method =="POST":
+        try:
+            form = comments_form(request.POST)
+            if form.is_valid():
+                if wishlist.objects.filter(for_which_listing = form.cleaned_data["listing_id"]).exists():
+                    wishlist_item = wishlist.objects.get(for_which_listing = form.cleaned_data["listing_id"])
+                    wishlist_item.delete()
+                    messages.success(request, 'this item have been removed form your wishlist')
+                    return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+                else:
+                    new_wish_list_item = wishlist()
+                    new_wish_list_item.save()
+                    new_wish_list_item.user.set([user_instance])
+                    new_wish_list_item.for_which_listing.set([form.cleaned_data["listing_id"]])
+                    messages.success(request, 'this item added to your wishlist')
+                    return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+        except ObjectDoesNotExist:
+            return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
+    else:
+        all_wishlist_items = wishlist.objects.all().filter(user = user_instance).order_by('-timestamp')
+        return render(request, "auctions/wishlist.html",{"wishlist":all_wishlist_items})

@@ -12,8 +12,13 @@
     $: {{bid}}
   </li>
 </ul>
+<form action="{% url 'wishlist' %}" method="post">
+  {% csrf_token %}
+ {{comments_form.listing_id}}
+ <input type="submit" value="⭐">
+</form>
 {% if listing.user == request.user %}
-close auction
+close auction need to make this button work
 {%else%}
 <form action="{% url 'listing_page' listing.id %} " method="post">
   {% csrf_token %}

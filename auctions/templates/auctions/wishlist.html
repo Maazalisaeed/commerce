@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+{% block title %}Ur Wishlist{% endblock %}
+{% block body %}
+<div class="hide_active">{%block active1%}active{% endblock %}</div>
+<ul>
+{% for item in wishlist %}
+    <li>
+        {{item.for_which_listing}}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
