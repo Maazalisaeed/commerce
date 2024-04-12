@@ -11,4 +11,5 @@ urlpatterns = [
     path("<int:listing_id>", views.listing_page, name="listing_page"),
     path("comments", views.comment_section, name="comment_section"),
     path("wishlist", views.wishlistfunction, name="wishlist"),
+    path("categories",views.categories, name="categories"),
 ]

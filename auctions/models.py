@@ -13,7 +13,7 @@ class listing(models.Model):  # a table for listing
     description = models.TextField(max_length= 10000, blank = True)
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     image_url = models.URLField()
-    catagorie = models.CharField(max_length=255, blank= False, default='default_value')
+    category = models.CharField(max_length=255, blank= False, default='default_value')
     def __str__ (self):
         return(f" {self.title},{self.id}")
 
