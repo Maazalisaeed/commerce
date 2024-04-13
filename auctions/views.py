@@ -164,5 +164,13 @@ def wishlistfunction(request):
         all_wishlist_items = wishlist.objects.all().filter(user = user_instance).order_by('-timestamp')
         return render(request, "auctions/wishlist.html",{"wishlist":all_wishlist_items})
 def categories(request):
-    all_categories = listing.objects.values('category').annotate(total=Count('category'))
+    if request.method =="POST":
+        which_catagory = request.POST["category_name"]
+        category_item = listing.objects.all().filter(category = which_catagory)
+        print(category_item)
+        return(HttpResponse("under work"))
+        
+    else:
+        all_categories = listing. objects.values('category').annotate(total=Count('category')) 
+        return render(request, "auctions/categories.html",{"all_categories":all_categories})
     

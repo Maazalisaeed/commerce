@@ -25,7 +25,7 @@
                         <a class="nav-link {%block active%} {% endblock %}" href="{% url 'index' %}">Active Listings</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link {%block active0%} {% endblock %}" href="#">Categories</a>
+                        <a class="nav-link {%block active0%} {% endblock %}" href="{% url 'categories' %}">Categories</a>
                         </li>
                         {% if user.is_authenticated %}
                             <li class="nav-item">
