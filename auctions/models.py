@@ -14,6 +14,7 @@ class listing(models.Model):  # a table for listing
     timestamp = models.DateTimeField(auto_now_add = True , null = True)
     image_url = models.URLField()
     category = models.CharField(max_length=255, blank= False, default='default_value')
+    is_auction_active = models.BooleanField(null=True)
     def __str__ (self):
         return(f" {self.title},{self.id}")
 

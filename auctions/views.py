@@ -7,12 +7,12 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from .models import User, listing, all_bids , comments, wishlist
-from .forms import new_listing_form , biding_form, comments_form
+from .forms import new_listing_form , biding_form, comments_form,listing_id_form
 from django.contrib import messages
 from . import util
 
 def index(request):
-    all_the_listings = listing.objects.all().order_by('-timestamp').prefetch_related('bid')
+    all_the_listings = listing.objects.filter(is_auction_active = True).order_by('-timestamp').prefetch_related('bid')
     listing_data_with_bids = util.display_listing(all_the_listings)
     return render(request, "auctions/index.html",{"listings_with_bids":listing_data_with_bids})
 
@@ -56,7 +56,7 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(username, email, password) # type: ignore
             user.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
@@ -72,7 +72,7 @@ def create_listing(request): # use the @login fuction provied by cs50 and add a 
         form = new_listing_form(request.POST)
         if form.is_valid():
             user_instance = User.objects.get(username= request.user.username) # plus I also wish to add user to sumbit there own images to me url way is clunky
-            new_listing = listing(user = user_instance,title = form.cleaned_data["title"], description = form.cleaned_data["description"], image_url = form.cleaned_data["image_url"], category = form.cleaned_data["category"])
+            new_listing = listing(user = user_instance,title = form.cleaned_data["title"], description = form.cleaned_data["description"], image_url = form.cleaned_data["image_url"], category = form.cleaned_data["category"], is_auction_active = "True")
             new_listing.save()
             initial_bid = all_bids(user = user_instance , bid = form.cleaned_data["initial_bid"], for_which_listing = new_listing)
             initial_bid.save() # add a way to send a message that a new listing is seccsufly been created
@@ -113,8 +113,8 @@ def listing_page(request, listing_id):
             else:
                 all_comments = "wow such empty"    
             form = biding_form(initial ={'listing_id':listing_id})
-            commenting_form = comments_form(initial ={'listing_id':listing_id})
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form,"comments_form":commenting_form, "comment_section":all_comments})
+            hidden_listing_id_form = listing_id_form(initial ={'hidden_listing_id':listing_id})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
@@ -122,12 +122,13 @@ def listing_page(request, listing_id):
 def comment_section(request):
     if request.method =="POST":
         form = comments_form(request.POST)
-        if form.is_valid():
+        id_form = listing_id_form(request.POST)
+        if form.is_valid() and id_form.is_valid():
             user_instance = User.objects.get(username= request.user.username)
-            this_listing = listing.objects.get(pk = form.cleaned_data["listing_id"])
+            this_listing = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
             new_comment = comments(user = user_instance, comment = form.cleaned_data["comment"], for_which_listing = this_listing)
             new_comment.save()
-            return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+            return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
     else:
         return HttpResponse("will make this page aswell")
 @login_required(login_url='/login')
@@ -135,20 +136,20 @@ def wishlistfunction(request):
     user_instance = User.objects.get(username= request.user.username)
     if request.method =="POST":
         try:
-            form = comments_form(request.POST)
-            if form.is_valid():
-                if wishlist.objects.filter(for_which_listing = form.cleaned_data["listing_id"]).exists():
-                    wishlist_item = wishlist.objects.get(for_which_listing = form.cleaned_data["listing_id"])
+            id_form = listing_id_form(request.POST)
+            if id_form.is_valid():
+                if wishlist.objects.filter(for_which_listing = id_form.cleaned_data["hidden_listing_id"]).exists():
+                    wishlist_item = wishlist.objects.get(for_which_listing = id_form.cleaned_data["hidden_listing_id"])
                     wishlist_item.delete()
                     messages.success(request, 'this item have been removed form your wishlist')
-                    return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+                    return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
                 else:
                     new_wish_list_item = wishlist()
                     new_wish_list_item.save()
                     new_wish_list_item.user.set([user_instance])
-                    new_wish_list_item.for_which_listing.set([form.cleaned_data["listing_id"]])
+                    new_wish_list_item.for_which_listing.set([id_form.cleaned_data["hidden_listing_id"]])
                     messages.success(request, 'this item added to your wishlist')
-                    return HttpResponseRedirect(reverse("listing_page", args=[form.cleaned_data["listing_id"]]))
+                    return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
     else:
@@ -164,4 +165,22 @@ def categories(request):
     else:
         all_categories = listing. objects.values('category').annotate(total=Count('category')) 
         return render(request, "auctions/categories.html",{"all_categories":all_categories})
-    
+def close_auction(request):
+    if request.method =="POST":
+        id_form = listing_id_form(request.POST)
+        if id_form.is_valid():
+            closeing_auction = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
+            closeing_auction.is_auction_active = False
+            closeing_auction.save()
+            messages.success(request, 'this listing has been cloed')
+            return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
+            
+
+def delete_auction(request):
+    if request.method =="POST":
+        id_form = listing_id_form(request.POST)
+        if id_form.is_valid():
+            deleteing_auction = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
+            deleteing_auction.delete()
+            messages.success(request, 'this listing has been been Deleted')
+            return HttpResponseRedirect(reverse("index"))

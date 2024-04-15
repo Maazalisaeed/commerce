@@ -1,6 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+{% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+{% endfor %}
 <div class="hide_active">{% block active %}active{% endblock %}</div>
 <h2>Active Listings</h2>
 <div class="container">

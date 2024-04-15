@@ -20,4 +20,5 @@ class biding_form(forms.Form):
         return form_data
 class comments_form(forms.Form):
     comment = forms.CharField(label="comment", widget=forms.Textarea(attrs={'class':"comment"}), required=False, max_length= 10000)
-    listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)
+class listing_id_form(forms.Form):
+    hidden_listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True) 

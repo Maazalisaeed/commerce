@@ -12,4 +12,6 @@ urlpatterns = [
     path("comments", views.comment_section, name="comment_section"),
     path("wishlist", views.wishlistfunction, name="wishlist"),
     path("categories",views.categories, name="categories"),
+    path("close_auction", views.close_auction, name="close_auction"),
+    path("delete_auction",views.delete_auction, name ="delete_auction"),
 ]
