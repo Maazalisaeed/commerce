@@ -26,7 +26,7 @@ def login_view(request):
 
         # Check if authentication successful
         if user is not None:
-            login(request, user)
+            login(request, user) # put a message here
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "auctions/login.html", {
@@ -38,6 +38,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    messages.success(request, 'you are successfully Logged out ')
     return HttpResponseRedirect(reverse("index"))
 
 
