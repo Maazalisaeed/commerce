@@ -105,7 +105,7 @@ def listing_page(request, listing_id):
         
         try:
             which_listing = listing.objects.get(pk = listing_id)
-            and_its_bid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
+            and_its_bid = which_listing.bid.order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
             comments_for_this_listing = comments.objects.all().filter(for_which_listing = listing_id).order_by('-timestamp')
             if comments_for_this_listing.exists():
@@ -170,9 +170,11 @@ def close_auction(request):
         id_form = listing_id_form(request.POST)
         if id_form.is_valid():
             closeing_auction = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
+            winning_bidder = closeing_auction.bid.order_by('-bid').first()
             closeing_auction.is_auction_active = False
             closeing_auction.save()
-            messages.success(request, 'this listing has been cloed')
+            
+            messages.success(request, f'this listing has been cloed and the winning bidder is {winning_bidder.user}')
             return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
             
 
