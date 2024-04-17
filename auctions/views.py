@@ -13,7 +13,7 @@ from . import util
 
 def index(request):
     all_the_listings = listing.objects.filter(is_auction_active = True).order_by('-timestamp').prefetch_related('bid')
-    listing_data_with_bids = util.display_listing(all_the_listings)
+    listing_data_with_bids = util.display_listing(all_the_listings,False)
     return render(request, "auctions/index.html",{"listings_with_bids":listing_data_with_bids})
 
 def login_view(request):
@@ -139,28 +139,31 @@ def wishlistfunction(request):
         try:
             id_form = listing_id_form(request.POST)
             if id_form.is_valid():
-                if wishlist.objects.filter(for_which_listing = id_form.cleaned_data["hidden_listing_id"]).exists():
-                    wishlist_item = wishlist.objects.get(for_which_listing = id_form.cleaned_data["hidden_listing_id"])
-                    wishlist_item.delete()
-                    messages.success(request, 'this item have been removed form your wishlist')
-                    return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
-                else:
-                    new_wish_list_item = wishlist()
-                    new_wish_list_item.save()
-                    new_wish_list_item.user.set([user_instance])
-                    new_wish_list_item.for_which_listing.set([id_form.cleaned_data["hidden_listing_id"]])
-                    messages.success(request, 'this item added to your wishlist')
-                    return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
+                #if wishlist.objects.filter(for_which_listing = id_form.cleaned_data["hidden_listing_id"], user = user_instance).exists():
+                 #   wishlist_item = wishlist.objects.get(for_which_listing = id_form.cleaned_data["hidden_listing_id"])
+                  #  wishlist_item.delete()
+                   # messages.success(request, 'this item have been removed form your wishlist')
+                    #return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
+
+                new_wish_list_item = wishlist()
+                new_wish_list_item.save()
+                new_wish_list_item.user.set([user_instance])
+                new_wish_list_item.for_which_listing.set([id_form.cleaned_data["hidden_listing_id"]])
+                messages.success(request, 'this item added to your wishlist')
+                return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
     else:
         all_wishlist_items = wishlist.objects.all().filter(user = user_instance).order_by('-timestamp')
-        return render(request, "auctions/wishlist.html",{"wishlist":all_wishlist_items})
+        wishlish_data_with_bids = []
+        for each_item in all_wishlist_items:
+            wishlish_data_with_bids.extend(util.display_listing(each_item,True))    
+        return render(request, "auctions/wishlist.html",{"wishlist":wishlish_data_with_bids})
 def categories(request):
     if request.method =="POST":
         which_catagory = request.POST["category_name"]
         category_item = listing.objects.all().filter(category = which_catagory).prefetch_related('bid').order_by('-timestamp')
-        listing_data_with_bids = util.display_listing(category_item)
+        listing_data_with_bids = util.display_listing(category_item,False)
         return render(request, "auctions/index.html",{"listings_with_bids":listing_data_with_bids})
         
     else:
