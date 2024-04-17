@@ -9,7 +9,7 @@ from django.db.models import Count
 from .models import User, listing, all_bids , comments, wishlist
 from .forms import new_listing_form , biding_form, comments_form,listing_id_form
 from django.contrib import messages
-from . import util # this is a new comment 
+from . import util 
 
 def index(request):
     all_the_listings = listing.objects.filter(is_auction_active = True).order_by('-timestamp').prefetch_related('bid')
