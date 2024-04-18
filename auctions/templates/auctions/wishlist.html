@@ -2,11 +2,35 @@
 {% block title %}Ur Wishlist{% endblock %}
 {% block body %}
 <div class="hide_active">{%block active1%}active{% endblock %}</div>
-<ul>
+
 {% for item in wishlist %}
-    <li>
-        {{item.title}}
-    </li>
+<div class="card mb-3" style="max-width: 1400px">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <a href="{% url 'listing_page' item.listing_id %}"><img class="image_size" src="{{item.image_url}}" class="card-img-top"
+                alt="this is a imge of {{item.title}}"></a>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{item.title}}</h5>
+                <p class="card-text">
+                    {{item.description|truncatewords:15}}
+                </p>
+                <p class="card-text">
+                    <small class="text-body-secondary">{{item.timestamp}}</small>
+                </p>
+                <form action="{% url 'remove_wishlist' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="wishlist_id" value="{{item.listing_id}}">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-danger" type="submit">
+                            Remove from wishlist
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endfor %}
-</ul>
 {% endblock %}

@@ -4,3 +4,8 @@ body {
 .hide_active{
     display: none;
 }
+.image_size{
+    height: 300px;
+    width: auto;
+
+}

@@ -1,3 +1,4 @@
+import re
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
@@ -160,12 +161,19 @@ def wishlistfunction(request):
             wishlish_data_with_bids.extend(util.display_listing(each_item,True))    
         return render(request, "auctions/wishlist.html",{"wishlist":wishlish_data_with_bids})
 def delwislist(request):
-    pass
-    #if wishlist.objects.filter(for_which_listing = id_form.cleaned_data["hidden_listing_id"], user = user_instance).exists():
-                 #   wishlist_item = wishlist.objects.get(for_which_listing = id_form.cleaned_data["hidden_listing_id"])
-                  #  wishlist_item.delete()
-                   # messages.success(request, 'this item have been removed form your wishlist')
-                    #return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
+    if request.method =="POST":
+        user_instance = User.objects.get(username= request.user.username)
+        listing_id = listing.objects.get(pk = request.POST['wishlist_id'])
+        delete_wishlist_item = wishlist.objects.get(user = user_instance, for_which_listing = request.POST['wishlist_id'])
+        if delete_wishlist_item.for_which_listing.count() == 1:
+            delete_wishlist_item.delete()
+            return HttpResponseRedirect(reverse('wishlist'))
+        else:
+            delete_wishlist_item.for_which_listing.remove(listing_id)
+            return HttpResponseRedirect(reverse('wishlist'))
+    else:
+        return render(request, "auctions/error_page.html",{"error":"no entery fuck off "})
+
 def categories(request):
     if request.method =="POST":
         which_catagory = request.POST["category_name"]

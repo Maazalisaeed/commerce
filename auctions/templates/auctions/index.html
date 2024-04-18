@@ -8,31 +8,23 @@
 {% endfor %}
 <div class="hide_active">{% block active %}active{% endblock %}</div>
 <h2>Active Listings</h2>
-<div class="container">
-    <div class="row">
-        {%for each_listing in listings_with_bids%}
-        <div class="col-lg-6 mb-4">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="{{each_listing.image_url}}" class="img-fluid rounded-start"
-                            alt="This is an image of {{each_listing.title}}">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{each_listing.title}}</h5>
-                            <p class="card-text" >{{each_listing.description|truncatewords:15}}</p>
-                            <h5 class="card-title">Current bid: ${{each_listing.bid}}</h5>
-                            <a href="{% url 'listing_page' each_listing.listing_id %}" class="btn btn-primary">place your bid here</a> 
-                            <p class="card-text"><small class="text-body-secondary">added
-                                    {{each_listing.timestamp}}</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for each_listing in listings_with_bids %}
+    <div class="col">
+      <div class="card">
+        <a href="{% url 'listing_page' each_listing.listing_id %}"><img class="image_size"  src="{{each_listing.image_url}}" class="card-img-top" alt="{{each_listing.title}}"></a>
+        <div class="card-body">
+          <h5 class="card-title">{{each_listing.title}}</h5>
+          <p class="card-text">{{each_listing.description|truncatewords:15}}</p>
+          <h6 class="card-title">${{each_listing.bid}}</h6>
+          <a href="{% url 'listing_page' each_listing.listing_id %}" class="btn btn-primary">place your bid here</a>
         </div>
+        <div class="card-footer">
+            <small class="text-body-secondary">{{each_listing.timestamp}}</small>
+        </div>
+      </div>
     </div>
+    {% endfor %}
 </div>
-{%endfor%}
 
 {% endblock %}
