@@ -28,3 +28,7 @@ textarea {
     border-radius: 10px;
     border: 3px groove;
 }
+.listing_page_image{
+    height: auto;
+    width: auto;
+}

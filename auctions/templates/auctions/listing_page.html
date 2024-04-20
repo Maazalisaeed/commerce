@@ -1,17 +1,15 @@
 {% extends "auctions/layout.html" %}
 {% block title %}{{listing.title}}{% endblock %}
 {% block body %}
-<ul>
-  <li>
-    {{listing.title}}
-  </li>
-  <li>
-    {{listing.description}}
-  </li>
-  <li>
-    $: {{bid}}
-  </li>
-</ul>
+<div class="card mb-3">
+  <img class="listing_page_image" src="{{listing.image_url}}" alt="this is a image of {{listing.image_url}}">
+  <div class="card-body">
+    <h5 class="card-title">{{listing.title}}</h5>
+    <h6 class="card-title">$ {{bid}}</h6>
+    <p class="card-text">{{listing.description}}</p>
+    <p class="card-text"><small class="text-body-secondary">{{listing.timestamp}}</small></p>
+  </div>
+</div>
 <form action="{% url 'wishlist' %}" method="post">
   {% csrf_token %}
  {{hidden_listing_id}}
