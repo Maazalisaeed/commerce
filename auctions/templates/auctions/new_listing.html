@@ -2,9 +2,37 @@
 {% block title %}Create a new listing{% endblock %}
 {% block body %}
 <div class="hide_active">{% block active2 %}active{% endblock %}</div>
-<form action="{% url 'create_listing' %}" method="post">
-{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="submit">
-</form>
+<div class="redesign_form">
+    <form action="{% url 'create_listing' %}" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-4 mt-3">
+            <span class="input-group-text" id="basic-addon1">{{ form.title.label_tag }}</span>
+            {{ form.title}}
+        </div>
+
+        <div class="input-group mb-5">
+            <span class="input-group-text">{{form.description.label_tag}}</span>
+            {{form.description}}
+        </div>
+        <div class="mb-5">
+            <div class="input-group">
+                <span class="input-group-text">{{form.image_url.label_tag}}</span>
+                {{form.image_url}}
+            </div>
+        </div>
+
+        <div class="input-group mb-5">
+            <span class="input-group-text">{{form.initial_bid.label_tag}}</span>
+            {{form.initial_bid}}
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">{{form.category.label_tag}}</span>
+            {{form.category}}
+        </div>
+        <div class="d-grid col-6 mx-auto">
+            <input class="btn btn-primary mb-4" type="submit" value="Submit">
+        </div>
+    </form>
+</div>
 {% endblock %}

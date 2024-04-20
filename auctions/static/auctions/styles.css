@@ -9,3 +9,22 @@ body {
     width: auto;
 
 }
+.category{
+
+    box-shadow: 7px 7px 3px grey
+}
+.button{
+    background-color: transparent;
+    border: 0px;
+}
+textarea {
+    height: 25vh;
+    width: 80%;
+}
+.redesign_form{
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    border: 3px groove;
+}

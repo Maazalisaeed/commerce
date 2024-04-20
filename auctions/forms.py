@@ -11,11 +11,11 @@ categories =(
     ("Others","Others"), 
 )
 class new_listing_form(forms.Form): # this is a form that is created by django for data about a new listing on the commerce website
-    title = forms.CharField(label="Title for the listing",max_length=80, required= True)
-    description = forms.CharField(label="description", widget=forms.Textarea(attrs={'class':"description"}), required=True, max_length= 10000)
-    image_url = forms.URLField(label="product image url (optional)", required=False)
-    initial_bid = forms.FloatField(label="initial bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
-    category = forms.ChoiceField(choices = categories,required=True)
+    title = forms.CharField(label="Listing Title",max_length=80, required= True,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Title','aria-label':'Title','aria-describedby':'basic-addon1'}))
+    description = forms.CharField(label="description", widget=forms.Textarea(attrs={'class':'form-control','aria-label':'Description'}), required=True, max_length= 10000)
+    image_url = forms.URLField(label="product image url (optional)", required=False, widget=forms.URLInput(attrs={'class': 'form-control','id':'basic-url','aria-describedby':'basic-addon3 basic-addon4'}))
+    initial_bid = forms.FloatField(label="Initial bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0','class':'form-control','aria-label':'Amount in USD only'}))
+    category = forms.ChoiceField(choices = categories,required=True,widget=forms.Select(attrs={'class': 'form-select','id':'inputGroupSelect01'}))
 class biding_form(forms.Form):
     current_bid = forms.FloatField(label="Your bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
     listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)

@@ -2,23 +2,28 @@
 
 {% block body %}
 <div class="hide_active">{% block active4 %}active{% endblock %}</div>
-    <h2>Login</h2>
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+<div class="redesign_form" style="max-width: 50% !important;">
+    <h2 class="mb-4 mt-3">Login</h2>
 
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <div class="form-group">
+        <div class="form-group mb-4">
             <input autofocus class="form-control" type="text" name="username" placeholder="Username">
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
+            <input class="form-control mb-4" type="password" name="password" placeholder="Password">
         </div>
-        <input class="btn btn-primary" type="submit" value="Login">
+        <div class="d-grid col-3 mx-auto">
+            <input class="btn btn-primary mb-4" type="submit" value="Login">
+        </div>
     </form>
 
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
-
+    <div class="redesign_form" style="max-width: 50% !important;">
+        Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+    </div>
+</div>
 {% endblock %}
