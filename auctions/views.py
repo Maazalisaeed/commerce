@@ -13,9 +13,9 @@ from django.contrib import messages
 from . import util # added this samll comment 
 
 def index(request):
-    all_the_listings = listing.objects.filter(is_auction_active = True).order_by('-timestamp').prefetch_related('bid')
+    all_the_listings = listing.objects.order_by('-timestamp').prefetch_related('bid')
     listing_data_with_bids = util.display_listing(all_the_listings,False)
-    return render(request, "auctions/index.html",{"listings_with_bids":listing_data_with_bids})
+    return render(request, "auctions/index.html",{"listings":listing_data_with_bids})
 
 def login_view(request):
     if request.method == "POST":
@@ -186,22 +186,28 @@ def categories(request):
         return render(request, "auctions/categories.html",{"all_categories":all_categories})
 def close_auction(request):
     if request.method =="POST":
-        id_form = listing_id_form(request.POST)
-        if id_form.is_valid():
-            closeing_auction = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
-            winning_bidder = closeing_auction.bid.order_by('-bid').first()
-            closeing_auction.is_auction_active = False
-            closeing_auction.save()
-            
-            messages.success(request, f'this listing has been cloed and the winning bidder is {winning_bidder.user}')
-            return HttpResponseRedirect(reverse("listing_page", args=[id_form.cleaned_data["hidden_listing_id"]]))
+        id_form = request.POST["hidden_id"]
+        closeing_auction = listing.objects.get(pk = id_form)
+        winning_bidder = closeing_auction.bid.order_by('-bid').first()
+        closeing_auction.is_auction_active = False
+        closeing_auction.save()    
+        messages.success(request, f'this listing has been cloed and the winning bidder is {winning_bidder.user}')
+        return HttpResponseRedirect(reverse("HQ"))
             
 
 def delete_auction(request):
     if request.method =="POST":
-        id_form = listing_id_form(request.POST)
-        if id_form.is_valid():
-            deleteing_auction = listing.objects.get(pk = id_form.cleaned_data["hidden_listing_id"])
-            deleteing_auction.delete()
-            messages.success(request, 'this listing has been been Deleted')
-            return HttpResponseRedirect(reverse("index"))
+        id_form = request.POST["hidden_id"]
+        deleteing_auction = listing.objects.get(pk = id_form)
+        deleteing_auction.delete()
+        messages.success(request, 'this listing has been been Deleted')
+        return HttpResponseRedirect(reverse("index"))
+
+@login_required(login_url='/login')
+def controll(request):
+    user_instance = User.objects.get(username= request.user.username)
+    user_listings = listing.objects.filter(user = user_instance).order_by('-timestamp').prefetch_related('bid')
+    listing_data_with_bids = util.display_listing(user_listings,False)
+    
+    return render(request, "auctions/controll_center.html",{"listings":listing_data_with_bids})
+

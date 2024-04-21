@@ -1,30 +1,25 @@
 {% extends "auctions/layout.html" %}
 {% block title %}{{listing.title}}{% endblock %}
 {% block body %}
-<div class="card mb-3">
-  <img class="listing_page_image" src="{{listing.image_url}}" alt="this is a image of {{listing.image_url}}">
+<div class="card" style="width: 35rem;">
+  <img src="{{listing.image_url}}" alt="this is a image of {{listing.title}}">
   <div class="card-body">
-    <h5 class="card-title">{{listing.title}}</h5>
-    <h6 class="card-title">$ {{bid}}</h6>
+    <h5 class="card-header">{{listing.title}}</h5>
+    <h4>$ {{bid}}</h4>
     <p class="card-text">{{listing.description}}</p>
-    <p class="card-text"><small class="text-body-secondary">{{listing.timestamp}}</small></p>
   </div>
+  <form action="{% url 'wishlist' %}" method="post">
+    {% csrf_token %}
+   {{hidden_listing_id}}
+   <input type="submit" value="⭐">
+  </form>
 </div>
-<form action="{% url 'wishlist' %}" method="post">
-  {% csrf_token %}
- {{hidden_listing_id}}
- <input type="submit" value="⭐">
-</form>
+
 {% if listing.user == request.user %}
 <form action="{% url 'close_auction' %} " method="post">
   {% csrf_token %}
-  {{hidden_listing_id}} 
+  <input type="hidden" name="hidden_id" value="{{listing.id}}"> 
   <input type="submit" value="Close the Auction">
-</form>
-<form action="{% url 'delete_auction' %} " method="post">
-  {% csrf_token %}
-  {{hidden_listing_id}} 
-  <input type="submit" value="delete the Auction">
 </form>
 {% elif listing.is_auction_active == True %}
 

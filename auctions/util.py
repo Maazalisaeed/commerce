@@ -2,6 +2,7 @@ import re
 
 def sub_display(each_listing,listing_data_with_bids):
     data_of_each_listing = {
+        'user': each_listing.user,
         'title': each_listing.title,
         'listing_id': each_listing.pk,
         'image_url': each_listing.image_url,

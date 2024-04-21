@@ -1,0 +1,47 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">
+    {{ message }}
+</div>
+{% endfor %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for each_listing in listings %}
+
+    <div class="col">
+        <div class="card" style="width: 18rem;">
+            <img class="image_size" src="{{each_listing.image_url}}" alt="this is a image of {{each_listing.title}}">
+            <div class="card-body">
+                <a href="{% url 'listing_page' each_listing.listing_id %}"><h5 class="card-title">{{each_listing.title}}</h5></a>
+                <h6>$ {{each_listing.bid}}</h6>
+                <p class="card-text">{{each_listing.description|truncatewords:20}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    {%if each_listing.is_auction_active == False %}
+                    the wining bider is {{each_listing.bid.user}}
+
+                    {% else %}
+                    <form action="{% url 'close_auction' %} " method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="hidden_id" value="{{each_listing.listing_id}}">
+                        <button type="submit" class="btn btn-primary">
+                            Close Auction
+                        </button>
+                    </form>
+                    {% endif %}
+                </li>
+
+                <li class="list-group-item">
+                    <form action="{% url 'delete_auction' %} " method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="hidden_id" value="{{each_listing.listing_id}}"> 
+                        <button type="submit" class="btn btn-danger">Delete Auction</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

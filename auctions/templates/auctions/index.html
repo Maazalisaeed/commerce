@@ -1,4 +1,36 @@
 {% extends "auctions/layout.html" %}
+{% block notifications %} 
+    <button type="submit" class="btn btn-light margin_right" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="bi bi-bell-fill" viewBox="0 0 16 16">
+          <path
+              d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
+      </svg>
+  </button>
+
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Notifications</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      {% for each_listing in listings %}
+      <div class="modal-body">
+        {% if request.user == each_listing.bid.user and each_listing.is_auction_active == False %}
+          {{each_listing.bid.user}} won this listing {{each_listing.title}}
+        {%endif%}
+      </div>
+      {% endfor %}
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 {% block body %}
 {% for message in messages %}
@@ -9,7 +41,9 @@
 <div class="hide_active">{% block active %}active{% endblock %}</div>
 <h2>Active Listings</h2>
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for each_listing in listings_with_bids %}
+    {% for each_listing in listings %}
+      {% if each_listing.is_auction_active == True %}
+      
     <div class="col">
       <div class="card">
         <a href="{% url 'listing_page' each_listing.listing_id %}"><img class="image_size"  src="{{each_listing.image_url}}" class="card-img-top" alt="{{each_listing.title}}"></a>
@@ -24,6 +58,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
     {% endfor %}
 </div>
 
