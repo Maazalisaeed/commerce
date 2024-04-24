@@ -201,7 +201,7 @@ def delete_auction(request):
         deleteing_auction = listing.objects.get(pk = id_form)
         deleteing_auction.delete()
         messages.success(request, 'this listing has been been Deleted')
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("HQ"))
 
 @login_required(login_url='/login')
 def controll(request):
@@ -210,4 +210,11 @@ def controll(request):
     listing_data_with_bids = util.display_listing(user_listings,False)
     
     return render(request, "auctions/controll_center.html",{"listings":listing_data_with_bids})
+def delete_comment(request):
+    id_form = request.POST["comment_id"]
+    deleteing_comment = comments.objects.get(pk = id_form)
+    listing_id =  deleteing_comment.for_which_listing.id
+    deleteing_comment.delete()
+    messages.success(request, 'Your Comment deleted successfuly')
+    return HttpResponseRedirect(reverse("listing_page", args=[listing_id]))
 

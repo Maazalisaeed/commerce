@@ -28,6 +28,6 @@ class biding_form(forms.Form):
             del form_data['current_bid']
         return form_data
 class comments_form(forms.Form):
-    comment = forms.CharField(label="comment", widget=forms.Textarea(attrs={'class':"comment"}), required=False, max_length= 10000)
+    comment = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control','id':'floatingTextarea','spellcheck':'false','placeholder':'Leave a comment here'}), required=False, max_length= 10000, label="")
 class listing_id_form(forms.Form):
     hidden_listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True) 
