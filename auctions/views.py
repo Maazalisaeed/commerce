@@ -91,8 +91,7 @@ def listing_page(request, listing_id):
                 user_instance = User.objects.get(username= request.user.username)
                 this_listing = listing.objects.get(pk = listing_id)
                 current_bid = all_bids(user = user_instance, bid = form.cleaned_data["current_bid"], for_which_listing = this_listing)
-                current_bid.save() # find a way to prevent the owner of the bid to place a bid insted show them the option to end auction
-                              # may be a different function for whishlist and catagories
+                current_bid.save()
                 return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
         
             else:
@@ -112,11 +111,13 @@ def listing_page(request, listing_id):
             comments_for_this_listing = comments.objects.all().filter(for_which_listing = listing_id).order_by('-timestamp')
             if comments_for_this_listing.exists():
                 all_comments = comments_for_this_listing
+                total_comments = comments.objects.all().filter(for_which_listing = listing_id).count()
             else:
-                all_comments = "wow such empty"    
-            form = biding_form(initial ={'listing_id':listing_id})
+                all_comments = "wow such empty"
+                total_comments = 0    
+            bid_form = biding_form(initial ={'listing_id':listing_id})
             hidden_listing_id_form = listing_id_form(initial ={'hidden_listing_id':listing_id})
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "form":form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "bid_form":bid_form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments,"total_comments":total_comments})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})

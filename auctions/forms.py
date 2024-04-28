@@ -17,7 +17,7 @@ class new_listing_form(forms.Form): # this is a form that is created by django f
     initial_bid = forms.FloatField(label="Initial bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0','class':'form-control','aria-label':'Amount in USD only'}))
     category = forms.ChoiceField(choices = categories,required=True,widget=forms.Select(attrs={'class': 'form-select','id':'inputGroupSelect01'}))
 class biding_form(forms.Form):
-    current_bid = forms.FloatField(label="Your bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0'}))
+    current_bid = forms.FloatField(label="Your bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0','class':'form-control'}))
     listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)
     # write coustom validators for this function today and also find  a way to add that vaildator to the html side aswell
     def clean(self):
