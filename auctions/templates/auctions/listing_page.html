@@ -7,27 +7,42 @@
 </div>
 {% endfor %}
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-6">
+  <div class="row justify-content-between">
+    <div class="col-5">
       <img src="{{listing.image_url}}" class="img-thumbnail image_size" alt="this is a image of {{listing.title}}">
     </div>
-    <div class="col-6">
-      <div class="card" style="width: 27rem;">
+    <div class="col-5 ">
+      <div class="card" style="width: auto;">
         <div class="card-body">
-          <h4 class="card-title">{{listing.title}}</h4>
-          <div class="position-absolute top-0 end-0">
+          <div class="float-end">
+            {% if is_this_in_wishlist == False%}
+            
             <form action="{% url 'wishlist' %}" method="post">
               {% csrf_token %}
               {{hidden_listing_id}}
               <input type="submit" value="⭐">
             </form>
+            {% else %}
+              <form action="{% url 'remove_wishlist' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="wishlist_id" value="{{listing.id}}">
+                <input type="hidden" name="which_page" value="True">
+                <input type="submit" value="🚫">
+              </form>
+            {% endif %}
           </div>
-          <h5 class="card-subtitle mb-2 text-body-secondary">{{bid}}</h5>
+          <div class="float-start>
+          <h4 class="card-title">{{listing.title}}</h4>
+          </div>
+          <div class="mt-3">
+          <h5 class="card-subtitle mb-2 text-body-secondary">$ {{bid}}</h5>
+          </div>
           <p class="card-text">{{listing.description}}</p>
           {% if listing.user == request.user %}
           <form action="{% url 'close_auction' %} " method="post">
             {% csrf_token %}
             <input type="hidden" name="hidden_id" value="{{listing.id}}">
+            <input type="hidden" name="which_page" value="True">
             <input type="submit" value="Close the Auction">
           </form>
           {% elif listing.is_auction_active == True %}
@@ -36,6 +51,7 @@
             {% csrf_token %}
             <div class="input-group mb-3">
               <span class="input-group-text">{{bid_form.current_bid.label_tag}}</span>
+              {{bid_form.listing_id}}
               {{bid_form.current_bid}}
               <button type="submit" class="btn btn-primary">Place this bid</button>
             </div>

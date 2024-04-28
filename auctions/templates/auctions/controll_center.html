@@ -25,6 +25,7 @@
                     <form action="{% url 'close_auction' %} " method="post">
                         {% csrf_token %}
                         <input type="hidden" name="hidden_id" value="{{each_listing.listing_id}}">
+                        <input type="hidden" name="which_page" value="False">
                         <button type="submit" class="btn btn-primary">
                             Close Auction
                         </button>

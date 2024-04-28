@@ -22,6 +22,7 @@
                 <form action="{% url 'remove_wishlist' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="wishlist_id" value="{{item.listing_id}}">
+                    <input type="hidden" name="which_page" value="False">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button class="btn btn-danger" type="submit">
                             Remove from wishlist

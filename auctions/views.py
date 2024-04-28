@@ -84,11 +84,11 @@ def create_listing(request): # use the @login fuction provied by cs50 and add a 
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
 def listing_page(request, listing_id):
+    user_instance = User.objects.get(username= request.user.username)
     if request.method =="POST":
         try:
             form = biding_form(request.POST)
             if form.is_valid():
-                user_instance = User.objects.get(username= request.user.username)
                 this_listing = listing.objects.get(pk = listing_id)
                 current_bid = all_bids(user = user_instance, bid = form.cleaned_data["current_bid"], for_which_listing = this_listing)
                 current_bid.save()
@@ -109,6 +109,10 @@ def listing_page(request, listing_id):
             and_its_bid = which_listing.bid.order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
             comments_for_this_listing = comments.objects.all().filter(for_which_listing = listing_id).order_by('-timestamp')
+            if wishlist.objects.filter(user = user_instance, for_which_listing = listing_id).exists():
+                is_this_in_wishlist = True
+            else:
+                is_this_in_wishlist = False
             if comments_for_this_listing.exists():
                 all_comments = comments_for_this_listing
                 total_comments = comments.objects.all().filter(for_which_listing = listing_id).count()
@@ -117,7 +121,7 @@ def listing_page(request, listing_id):
                 total_comments = 0    
             bid_form = biding_form(initial ={'listing_id':listing_id})
             hidden_listing_id_form = listing_id_form(initial ={'hidden_listing_id':listing_id})
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "bid_form":bid_form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments,"total_comments":total_comments})
+            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "bid_form":bid_form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments,"total_comments":total_comments,"is_this_in_wishlist": is_this_in_wishlist})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
@@ -165,13 +169,24 @@ def delwislist(request):
     if request.method =="POST":
         user_instance = User.objects.get(username= request.user.username)
         listing_id = listing.objects.get(pk = request.POST['wishlist_id'])
-        delete_wishlist_item = wishlist.objects.get(user = user_instance, for_which_listing = request.POST['wishlist_id'])
+        which_page = request.POST['which_page']
+        print(type(which_page))
+        delete_wishlist_item = wishlist.objects.get(user = user_instance, for_which_listing = listing_id)
         if delete_wishlist_item.for_which_listing.count() == 1:
             delete_wishlist_item.delete()
-            return HttpResponseRedirect(reverse('wishlist'))
+            if which_page == 'True':
+                return HttpResponseRedirect(reverse("listing_page", args=[request.POST['wishlist_id']]))
+            else:
+
+                return HttpResponseRedirect(reverse('wishlist'))
         else:
             delete_wishlist_item.for_which_listing.remove(listing_id)
-            return HttpResponseRedirect(reverse('wishlist'))
+
+            if which_page == 'True':
+                return HttpResponseRedirect(reverse("listing_page", args=[request.POST['wishlist_id']]))
+            else:
+
+                return HttpResponseRedirect(reverse('wishlist'))
     else:
         return render(request, "auctions/error_page.html",{"error":"no entery fuck off "})
 
@@ -190,10 +205,14 @@ def close_auction(request):
         id_form = request.POST["hidden_id"]
         closeing_auction = listing.objects.get(pk = id_form)
         winning_bidder = closeing_auction.bid.order_by('-bid').first()
+        which_page = request.POST['which_page']
         closeing_auction.is_auction_active = False
         closeing_auction.save()    
         messages.success(request, f'this listing has been cloed and the winning bidder is {winning_bidder.user}')
-        return HttpResponseRedirect(reverse("HQ"))
+        if which_page == 'True':
+            return HttpResponseRedirect(reverse("listing_page", args=[request.POST["hidden_id"]]))
+        else:
+            return HttpResponseRedirect(reverse("HQ"))
             
 
 def delete_auction(request):
