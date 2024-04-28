@@ -6,83 +6,95 @@
   {{ message }}
 </div>
 {% endfor %}
-<div class="card" style="width: 35rem;">
-  <img src="{{listing.image_url}}" alt="this is a image of {{listing.title}}">
-  <div class="card-body">
-    <h5 class="card-header">{{listing.title}}</h5>
-    <h4>$ {{bid}}</h4>
-    <p class="card-text">{{listing.description}}</p>
-  </div>
-  <form action="{% url 'wishlist' %}" method="post">
-    {% csrf_token %}
-    {{hidden_listing_id}}
-    <input type="submit" value="⭐">
-  </form>
-</div>
-
-{% if listing.user == request.user %}
-<form action="{% url 'close_auction' %} " method="post">
-  {% csrf_token %}
-  <input type="hidden" name="hidden_id" value="{{listing.id}}">
-  <input type="submit" value="Close the Auction">
-</form>
-{% elif listing.is_auction_active == True %}
-
-<form action="{% url 'listing_page' listing.id %} " method="post">
-  {% csrf_token %}
-  {{bid_form}}
-  <input type="submit" value="submit">
-</form>
-{% else %}
-<div>
-  this listing is closed
-</div>
-{% endif %}
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  biding history
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">All the previous bids</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="container-fluid">
-          {% for each_bid in bid_histroy %}
-          <div class="row">
-            <div class="col-md-12">@{{each_bid.user}}: ${{each_bid.bid}} at {{each_bid.timestamp}} </div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <img src="{{listing.image_url}}" class="img-thumbnail image_size" alt="this is a image of {{listing.title}}">
+    </div>
+    <div class="col-6">
+      <div class="card" style="width: 27rem;">
+        <div class="card-body">
+          <h4 class="card-title">{{listing.title}}</h4>
+          <div class="position-absolute top-0 end-0">
+            <form action="{% url 'wishlist' %}" method="post">
+              {% csrf_token %}
+              {{hidden_listing_id}}
+              <input type="submit" value="⭐">
+            </form>
           </div>
-          {% endfor %}
+          <h5 class="card-subtitle mb-2 text-body-secondary">{{bid}}</h5>
+          <p class="card-text">{{listing.description}}</p>
+          {% if listing.user == request.user %}
+          <form action="{% url 'close_auction' %} " method="post">
+            {% csrf_token %}
+            <input type="hidden" name="hidden_id" value="{{listing.id}}">
+            <input type="submit" value="Close the Auction">
+          </form>
+          {% elif listing.is_auction_active == True %}
+
+          <form action="{% url 'listing_page' listing.id %} " method="post">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <span class="input-group-text">{{bid_form.current_bid.label_tag}}</span>
+              {{bid_form.current_bid}}
+              <button type="submit" class="btn btn-primary">Place this bid</button>
+            </div>
+          </form>
+          {% else %}
+          <div>
+            this listing is closed
+          </div>
+          {% endif %}
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            biding history
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel">All the previous bids</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    {% for each_bid in bid_histroy %}
+                    <div class="row">
+                      <div class="col-md-12">@{{each_bid.user}}: ${{each_bid.bid}} at {{each_bid.timestamp}} </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
       </div>
     </div>
   </div>
 </div>
-
 <form action="{% url 'comment_section' %}" method="post" class="mt-4">
-  <div class="form-floating">  
+  <div class="form-floating">
     {% csrf_token %}
-      {{hidden_listing_id}}
-      {{comments_form}}
-      <label for="floatingTextarea">Comments</label>
-      <div class="d-grid d-md-flex justify-content-md-end">
-        <button type="submit" class="btn btn-primary mt-2">Post</button>
-      </div>
-    </div>  
+    {{hidden_listing_id}}
+    {{comments_form}}
+    <label for="floatingTextarea">Comments</label>
+    <div class="d-grid d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary mt-2">Post</button>
+    </div>
+  </div>
 </form>
-  
+
 {% if comment_section == "wow such empty" %}
 <div>
-    Comments: {{total_comments}}
+  Comments: {{total_comments}}
 </div>
 <div class="card mt-2 " style="width: auto">
   <div class="card-body d-grid d-md-flex justify-content-md-center">
@@ -92,9 +104,9 @@
   </div>
 </div>
 {% else %}
-  <div>
-      Comments: {{total_comments}}
-  </div>  
+<div>
+  Comments: {{total_comments}}
+</div>
 {%for each_comment in comment_section %}
 {% if each_comment.user == request.user %}
 <form action="{% url 'del_comment' %}" method="post" class="mt-2">
@@ -143,5 +155,4 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-
 {% endblock %}
