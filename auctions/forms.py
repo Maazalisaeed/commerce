@@ -1,6 +1,8 @@
 from django import forms
 from django.core.validators import MinValueValidator
 from .models import all_bids
+
+# non standard way of making a category but it covers all of the important categories of ebay
 categories =( 
     ("Fashion", "Fashion"), 
     ("Electronics", "Electronics"), 
@@ -19,7 +21,7 @@ class new_listing_form(forms.Form): # this is a form that is created by django f
 class biding_form(forms.Form):
     current_bid = forms.FloatField(label="Your bid $",validators = [MinValueValidator(0)], required= True, widget=forms.NumberInput(attrs={'min': '0','class':'form-control'}))
     listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)
-    # write coustom validators for this function today and also find  a way to add that vaildator to the html side aswell
+    # coustom validators for the bid so that it can be sure the new bid that is being palced is higher then the previous bid
     def clean(self):
         form_data = self.cleaned_data
         current_bid_of_this_listing = all_bids.objects.filter(for_which_listing = form_data['listing_id']).order_by('-bid').first()
@@ -27,7 +29,9 @@ class biding_form(forms.Form):
             self._errors["current_bid"] = self.error_class(["Bid must be larger than the last one"])
             del form_data['current_bid']
         return form_data
-class comments_form(forms.Form):
+    
+class comments_form(forms.Form): # a form with textare  for people to enter there comments
     comment = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control','id':'floatingTextarea','spellcheck':'false','placeholder':'Leave a comment here'}), required=False, max_length= 10000, label="")
-class listing_id_form(forms.Form):
+
+class listing_id_form(forms.Form): # a non standard method for wherea a function needs which listing id has been submitted
     hidden_listing_id = forms.IntegerField(widget=forms.HiddenInput(), required=True) 
