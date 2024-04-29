@@ -84,9 +84,10 @@ def create_listing(request): # use the @login fuction provied by cs50 and add a 
     else:
         return render(request, "auctions/new_listing.html",{"form": new_listing_form()})
 def listing_page(request, listing_id):
-    user_instance = User.objects.get(username= request.user.username)
+    
     if request.method =="POST":
         try:
+            user_instance = User.objects.get(username= request.user.username)
             form = biding_form(request.POST)
             if form.is_valid():
                 this_listing = listing.objects.get(pk = listing_id)
@@ -105,23 +106,27 @@ def listing_page(request, listing_id):
 
         
         try:
+            is_this_in_wishlist = False
             which_listing = listing.objects.get(pk = listing_id)
             and_its_bid = which_listing.bid.order_by('-bid').first()
             all_the_bids = all_bids.objects.all().filter(for_which_listing = listing_id).order_by('-bid')
             comments_for_this_listing = comments.objects.all().filter(for_which_listing = listing_id).order_by('-timestamp')
-            if wishlist.objects.filter(user = user_instance, for_which_listing = listing_id).exists():
-                is_this_in_wishlist = True
-            else:
-                is_this_in_wishlist = False
+            if  User.objects.filter(username= request.user.username).exists():
+                
+                if wishlist.objects.filter(user = User.objects.get(username= request.user.username), for_which_listing = listing_id).exists():
+                    is_this_in_wishlist = True
+                else:
+                    is_this_in_wishlist = False
+        
             if comments_for_this_listing.exists():
                 all_comments = comments_for_this_listing
                 total_comments = comments.objects.all().filter(for_which_listing = listing_id).count()
             else:
                 all_comments = "wow such empty"
                 total_comments = 0    
-            bid_form = biding_form(initial ={'listing_id':listing_id})
-            hidden_listing_id_form = listing_id_form(initial ={'hidden_listing_id':listing_id})
-            return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "bid_form":bid_form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments,"total_comments":total_comments,"is_this_in_wishlist": is_this_in_wishlist})
+                bid_form = biding_form(initial ={'listing_id':listing_id})
+                hidden_listing_id_form = listing_id_form(initial ={'hidden_listing_id':listing_id})
+                return render(request, "auctions/listing_page.html",{ "listing": which_listing, "bid": and_its_bid, "bid_histroy": all_the_bids, "bid_form":bid_form,"comments_form":comments_form, "hidden_listing_id":hidden_listing_id_form, "comment_section":all_comments,"total_comments":total_comments,"is_this_in_wishlist": is_this_in_wishlist})
     
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"no listing found with this url try again"})
