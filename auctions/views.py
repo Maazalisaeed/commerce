@@ -104,7 +104,7 @@ def listing_page(request, listing_id): # displays all the individual data of the
             else: # if the bid is not valid user is presendted is a error message that the bid was lower then the previous bid
                 which_listing = listing.objects.get(pk = listing_id)
                 lastbid = which_listing.bid.filter(for_which_listing = listing_id).order_by('-bid').first()
-                messages.error(request, f"There was an error. your bid must be greater then ${lastbid}")
+                messages.info(request, f"There was an error. your bid must be greater then ${lastbid}")
                 return HttpResponseRedirect(reverse("listing_page", args=[listing_id])) 
         except ObjectDoesNotExist:
             return render(request, "auctions/error_page.html",{"error":"user must be signed in"}) # user must be sign in to palce this bid            
@@ -189,17 +189,18 @@ def delwislist(request): # dlelte items in the wishlist
         if delete_wishlist_item.for_which_listing.count() == 1: # chekc is this is the last item in there wislist this delete the relation ship in the data bade
             delete_wishlist_item.delete()
             if which_page == 'True':
+                messages.info(request, 'this item deleted from your wishlist')
                 return HttpResponseRedirect(reverse("listing_page", args=[request.POST['wishlist_id']]))
             else:
-
+                
                 return HttpResponseRedirect(reverse('wishlist'))
         else:
             delete_wishlist_item.for_which_listing.remove(listing_id) # if this  is not last  item in their wihslist therfoure, it only removes the item but keeps the relationship
 
             if which_page == 'True':
+                messages.info(request, 'this item deleted from your wishlist')
                 return HttpResponseRedirect(reverse("listing_page", args=[request.POST['wishlist_id']]))
             else:
-
                 return HttpResponseRedirect(reverse('wishlist'))
     else:
         return render(request, "auctions/error_page.html",{"error":"NO Entry"})
@@ -212,7 +213,7 @@ def categories(request): # redirect user  to the items in the that category
         return render(request, "auctions/index.html",{"listings":listing_data_with_bids})
         
     else: # if the reqest method is post this instead  show user all the aviabel catgories
-        all_categories = listing. objects.values('category').annotate(total=Count('category')) 
+        all_categories = listing.objects.values('category').annotate(total=Count('category')).filter(is_auction_active=True) 
         return render(request, "auctions/categories.html",{"all_categories":all_categories})
     
 def close_auction(request): # closes the listing which is only requested by the owner of the listing

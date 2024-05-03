@@ -46,7 +46,7 @@
       
     <div class="col">
       <div class="card">
-        <a href="{% url 'listing_page' each_listing.listing_id %}"><img class="image_size"  src="{{each_listing.image_url}}" class="card-img-top" alt="{{each_listing.title}}"></a>
+        <img src="{{each_listing.image_url}}" class="card-img-top image_size " alt="{{each_listing.title}}">
         <div class="card-body">
           <h5 class="card-title">{{each_listing.title}}</h5>
           <p class="card-text">{{each_listing.description|truncatewords:15}}</p>
